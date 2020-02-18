@@ -1,0 +1,139 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Scanner;
+
+
+public class TopStreamingArtisits {
+    public static void main(String[] args) {
+        TrackData w = new TrackData();
+        w.readFile();
+        w.reportArtists();
+    }
+}
+// Class reporesents array structure of data in file in terms of rows and columsn
+class TrackData{
+    int cols;
+    int rows;
+    String [][] data;
+    
+    //constructor
+    public TrackData(){
+        this.cols = 4;
+        this.rows = 10;
+        this.data = new String[rows][cols];
+    }
+    // Read file contents into data array
+    public void readFile(){
+        File text = new File("C:src\\data\\regional-global-weekly.csv");
+        Scanner scnr;
+        try {
+           scnr = new Scanner(text);
+           int row =0, col=0;
+           while(scnr.hasNextLine()){
+            String line = scnr.nextLine();
+            //System.out.println("" + line);
+            String[] strArr = line.split(",");
+            data[row][col] = strArr[col];col++;
+            data[row][col] = strArr[col];col++;
+            data[row][col] = strArr[col];col++;
+            data[row][col] = strArr[col];col++;
+            //System.out.println(data[row][2]);
+            col= strArr.length;
+            row++;
+           }
+        }
+        
+        catch (FileNotFoundException e) {
+            System.out.println("file not found");
+        }
+        catch (NumberFormatException e){
+           System.out.println("file has wrong data");
+        }
+    }
+    // create two reports: 1 which arists 2 Top streamed artists
+    public void reportArtists(){
+       PrintWriter writer1 = null;   
+       PrintWriter writer2 = null;
+       
+       try{
+            writer1 = new PrintWriter(new FileWriter("C:src\\artists.dat"));
+            writer2 = new PrintWriter(new FileWriter("C:src\\TopStreamedArtists.dat")); 
+       }
+       catch (FileNotFoundException e) {
+           System.out.println("file not found");
+       }
+       catch (IOException e) {
+           System.out.println("file is not accesible");
+       }
+       
+       String[] artistsArr = new String[rows]; // arrays to hold values
+       int[] count = new int[rows];
+       int[] streamCount = new int[rows];
+       int index = 0;
+       int atWhichIndex = -1;
+       
+       
+       for(int i=0;i<rows;i++){
+            //System.out.println(data[i][2]);
+            atWhichIndex = getArtistsExistsIndex(artistsArr,data[i][2]); // find index in artist array of artist in ith row
+            // if not found in artist array, then add it to artist array
+            if(atWhichIndex < 0){
+                    artistsArr[index] = data[i][2];
+                    count[index]= count[index]+1;
+                    streamCount[index] = streamCount[index] + Integer.parseInt(data[i][3]);
+                    index++;
+            }
+            //if found then increase stream count
+            else{
+                count[atWhichIndex]= count[atWhichIndex]+1;
+                streamCount[atWhichIndex] = streamCount[atWhichIndex]+Integer.parseInt(data[i][3]);
+            }
+       }
+       
+       //Array.sort(streamCount);
+       for(int i=0;i<index;i++){  // write artist and value to file
+            writer1.write(artistsArr[i] + "," + count[i] + "\n");
+            writer2.write(artistsArr[i] + "," + streamCount[i] + "\n");   
+        }
+        //close files and flush buffers
+        writer1.flush();
+        writer1.close();
+        writer2.flush();
+        writer2.close();
+    }
+    
+    //get position of artists in array
+    public int getArtistsExistsIndex(String[] arr, String artist){
+       int result= -1;
+       artist = " ";
+       for(int i=0;i<rows;i++){
+           if(artist.equals(arr[i])){
+               return i;
+           } 
+       }
+       return result;
+    }  
+}
+
+class Artist{
+    private String name;
+    private Artist next;
+    
+    public void name (){
+        this.name = name;
+    }
+}
+
+class TopStreamingArtists{
+   private Artist first;
+   public void TopStreamingArtists(){
+      first = null;
+    }
+    public boolean isEmpty(){
+     return (first == null);
+    }
+}
